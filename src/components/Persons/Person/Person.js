@@ -3,16 +3,12 @@ import './Person.css'
 import Radium from 'radium';
 
 const person = (props) => {
+    console.log('[Person.js] rendering ...')
     const style = {
         '@media (min-width: 500px)': {
             width: '450px'
         }
     };
-    
-    let rnd = Math.random();
-    if(rnd<0.7) {
-        throw new Error('Something went wrong.')
-    }
     return (
         <div className="Person" style={style}>
             <p onClick={props.click}>I'm a {props.name} and I'm {props.age} years old.</p>

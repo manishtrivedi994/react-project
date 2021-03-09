@@ -1,14 +1,19 @@
 import React, { Component } from 'react';
 import './App.css';
 import Radium, { StyleRoot } from 'radium';
-import ErrorBoundary from './ErrorBoundary/ErrorBoundary'
-import Person from './Person/Person'
+import Persons from '../components/Persons/Persons'
+import Cockpit from '../components/Cockpit/Cockpit'
 
 class App extends Component {
   
   //useState always returns an array with exactly two elements 1. current state(intial or(if) changed) 2. function that allows us to update this state such that react is
   //aware of it and rerender this component
   //React Hooks doesn't merge with the old state in turn replaces the old state
+
+    constructor(props) {
+      super(props);
+      console.log('[App.js] constructor');
+    }
 
    state = ({
     persons: [
@@ -18,6 +23,15 @@ class App extends Component {
     ],
     otherState: 'some other value'
   });
+
+  static getDerivedStateFromProps(props, state){
+    console.log('[App.js] getDerivedStateFromProps', props);
+    return state;
+  }
+
+  componentDidMount() {
+    console.log('[App.js] component did mount ')
+  }
 
   nameChangedHandler = (event, id) => {
     const personIndex = this.state.persons.findIndex(p => {
@@ -50,59 +64,27 @@ class App extends Component {
       showPersons: !doesShow
     })
   }
-    render() {
-      const style = {
-        backgroundColor: 'green',
-        color: 'white',
-        font: 'inherit',
-        border: '1px solid blue',
-        padding: '8px',
-        cursor: 'pointer',
-        ':hover': {
-          backgroundColor: 'lightgreen',
-          color: 'black'
-        }
-      };
+  render() {
+      console.log('[App.js] render'); 
 
       let persons = null;
       if(this.state.showPersons) {
         persons = (
-          <div>
-            {this.state.persons.map((person, index) => {
-              return <ErrorBoundary key={person.id}>
-              <Person 
-              click={() => this.deletePersonHandler(index)}
-              name={person.name} 
-              age={person.age}
-              changed={(event) => this.nameChangedHandler(event, person.id)}/></ErrorBoundary>
-            })
-            }
-          </div>
+            <Persons 
+              persons={this.state.persons}
+              clicked={this.deletePersonHandler}
+              changed={this.nameChangedHandler} />
         );
-        style.backgroundColor= 'red';
-        style[':hover']= {
-          backgroundColor: 'salmon',
-          color: 'black'
-        }
       }
-
-     let classes = []; 
-     if(this.state.persons.length<=2) {
-       classes.push('red'); //classes = ['red'];
-     }
-     if(this.state.persons.length<=1) {
-       classes.push('bold'); //classes = ['red', 'bold'];
-
-     }
 
     return (
       <StyleRoot>
         <div className="App">
-          <h1>Hi! I'm React App.</h1>
-          <p className={classes.join(' ')}>This is really working.</p>
-          <button 
-          style={style}
-          onClick={this.togglePersonsHandler}>Switch Name</button>
+          <Cockpit 
+            title={this.props.appTitle}
+            persons={this.state.persons}
+            showPersons={this.state.showPersons}
+            clicked={this.togglePersonsHandler}/>
           {persons}
         </div>
       </StyleRoot>
